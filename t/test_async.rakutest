@@ -1,0 +1,21 @@
+use Test;
+use lib <lib>;
+use FireProcess;
+
+plan 1;
+
+unless $*DISTRO.is-win {
+    skip "Test only meaningful on Windows";
+    exit;
+}
+
+my $start = now;
+
+# Launch a command that sleeps for 10 seconds
+fire-process(<cmd.exe /c timeout /T 10 /NOBREAK>);
+
+my $elapsed = now - $start;
+
+# fire-process should return fast — well before 10 seconds
+ok $elapsed < 2, "fire-process returns control immediately (elapsed: $elapsed)";
+

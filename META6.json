@@ -1,0 +1,14 @@
+{
+  "meta-version" : "1",
+  "name": "FireProcess",
+  "version": "0.1.0",
+  "description": "Fire a process that will not die after Raku interpreter exits, without blocking execution",
+  "auth": ["github:MatthieuHAMEL"],
+  "license": "Artistic-2.0",
+  "provides": {
+    "FireProcess": "lib/FireProcess.rakumod"
+  },
+  "raku-version" : "6.*",
+  "depends": [],
+  "test-depends": ["Test"],
+}
