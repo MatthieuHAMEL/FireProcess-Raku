@@ -1,5 +1,10 @@
 unit module FireProcess;
 
+## TODO: Algorithm is not correct right now. I must implement : 
+# first CLTA quoting 
+# then cmd quoting 
+# not cmd quoting with a vague enclosing by "" and \" escaping !
+
 constant $special-chars = Set.new(':', '%', '|', '&', '(', ')', '!', '^', '<', '>');
 
 # I implemented what this article says about "cmd.exe" escaping
