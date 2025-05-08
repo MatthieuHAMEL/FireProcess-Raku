@@ -9,6 +9,6 @@ is cmd-quote-argv([｢simple｣]), ｢simple｣,   'simple arg, no quoting neede
 is cmd-quote-argv([｢with space｣]), ｢^"with space^"｣,   'quotes for space';
 is cmd-quote-argv([｢quote"inside｣]), ｢^"quote\^"inside^"｣,   'double-quote escaping';
 is cmd-quote-argv([｢quote"inside with space｣]), ｢^"quote\^"inside with space^"｣,'double quote escaping + space';
-is cmd-quote-argv([｢｣]), ｢｣, 'Empty string quoted';
+is cmd-quote-argv([｢｣]), ｢^"^"｣, 'Empty string quoted';
 
 done-testing;

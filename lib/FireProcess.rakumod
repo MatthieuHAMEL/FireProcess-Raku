@@ -11,6 +11,10 @@ constant $special-chars = Set.new(':', '%', '|', '&', '(', ')', '!', '^', '<', '
 # https://learn.microsoft.com/en-gb/archive/blogs/twistylittlepassagesallalike/everyone-quotes-command-line-arguments-the-wrong-way
 
 sub argv-quote(Str:D $arg, Bool :$force = False --> Str:D) {
+    if $arg eq '' {
+	return '""';
+    }
+    
     # If not forced and the argument does not contain special characters, return as-is
     unless $force or $arg ~~ /<[\s \t \n \v \"]>/ {
         return $arg;
