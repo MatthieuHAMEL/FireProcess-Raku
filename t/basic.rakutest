@@ -2,14 +2,13 @@ use Test;
 use lib <lib>;
 use FireProcess;
 
-is cmd-quote-str(｢simple｣),              ｢simple｣,                    'Simple arg, no quoting needed';
-is cmd-quote-str(｢with space｣),          ｢^"with space^"｣,              'Quotes for space';
-is cmd-quote-str(｢quote"inside｣),        ｢quote\^"inside｣,           'Double-quote escaping';
-is cmd-quote-str(｢quote"inside with space｣),    ｢^"quote\^"inside with space^"｣,  'Double-quote escaping + space';
-is cmd-quote-str(｢｣),                '^"^"',                        'Empty string quoted';
-
 is cmd-quote-argv(('first', 'second', 'third')), ｢first second third｣,   'Simple args';
 is cmd-quote-argv(('first', 'second space', 'third')), ｢first ^"second space^" third｣,   'Simple args';
 is cmd-quote-argv((｢hello " & world"｣, ｢I love Raku!｣)),  ｢^"hello \^" ^& world\^"^" ^"I love Raku^!^"｣, 'with special chars + spaces';
+is cmd-quote-argv([｢simple｣]), ｢simple｣,   'simple arg, no quoting needed';
+is cmd-quote-argv([｢with space｣]), ｢^"with space^"｣,   'quotes for space';
+is cmd-quote-argv([｢quote"inside｣]), ｢^"quote\^"inside^"｣,   'double-quote escaping';
+is cmd-quote-argv([｢quote"inside with space｣]), ｢^"quote\^"inside with space^"｣,'double quote escaping + space';
+is cmd-quote-argv([｢｣]), ｢｣, 'Empty string quoted';
 
 done-testing;

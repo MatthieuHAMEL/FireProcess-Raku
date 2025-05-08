@@ -5,37 +5,67 @@ unit module FireProcess;
 # then cmd quoting 
 # not cmd quoting with a vague enclosing by "" and \" escaping !
 
-constant $special-chars = Set.new(':', '%', '|', '&', '(', ')', '!', '^', '<', '>');
+constant $special-chars = Set.new(':', '%', '|', '&', '(', ')', '!', '^', '<', '>', '"');
 
-# I implemented what this article says about "cmd.exe" escaping
+# I implemented what this article says about CLTA and "cmd.exe" escaping
 # https://learn.microsoft.com/en-gb/archive/blogs/twistylittlepassagesallalike/everyone-quotes-command-line-arguments-the-wrong-way
-sub cmd-quote-str(Str:D $raw --> Str:D) is export
-{
-    my $out = '';
 
-    for $raw.comb -> $ch {
-        given $ch {
-            when '"' {
-                $out ~= ｢\^"｣;
-            }
-            when * ∈ $special-chars {
-                $out ~= "^$ch";
-            }
-            default  {
-                $out ~= $ch;
-            }
-        }
+sub argv-quote(Str:D $arg, Bool :$force = False --> Str:D) {
+    # If not forced and the argument does not contain special characters, return as-is
+    unless $force or $arg ~~ /<[\s \t \n \v \"]>/ {
+        return $arg;
     }
 
-    # Enclose the whole arg if it contains spaces
-    if $raw ~~ /\s/ || $raw eq '' {
-        $out = '^"' ~ $out ~ '^"';
+    my $command-line = '"';
+    my $i = 0;
+    while $i < $arg.chars {
+        my $num-backslashes = 0;
+
+        # Count backslashes
+        while $i < $arg.chars && $arg.substr($i,1) eq Q[\] {
+            ++$i;
+            ++$num-backslashes;
+        }
+
+        # Check if we've reached the end
+        if $i == $arg.chars {
+            # Escape all backslashes before closing quote
+            $command-line ~= '\\' x ($num-backslashes * 2);
+            last;
+        }
+
+        my $char = $arg.substr($i,1);
+
+        if $char eq '"' {
+            # Escape all backslashes and the double quote
+            $command-line ~= '\\' x ($num-backslashes * 2 + 1);
+            $command-line ~= $char;
+        } else {
+            # Normal character: add backslashes and the character
+            $command-line ~= '\\' x $num-backslashes;
+            $command-line ~= $char;
+        }
+
+        ++$i;
+    }
+
+    $command-line ~= '"';
+    return $command-line;
+}
+
+sub cmd-quote(Str:D $raw --> Str:D) {
+    my $out = '';
+    for $raw.comb -> $ch {
+	if $ch ∈ $special-chars {
+            $out ~= '^';
+        }
+        $out ~= $ch;
     }
     return $out;
 }
 
 sub cmd-quote-argv(@args --> Str:D) is export {
-    return @args.map(&cmd-quote-str).join(' ');
+    return @args.map(&cmd-quote o &argv-quote).join(' ');
 }
 
 #| Runs the process (whose name is the first argument of @command) without blocking
