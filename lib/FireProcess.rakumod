@@ -1,10 +1,5 @@
 unit module FireProcess;
 
-## TODO: Algorithm is not correct right now. I must implement : 
-# first CLTA quoting 
-# then cmd quoting 
-# not cmd quoting with a vague enclosing by "" and \" escaping !
-
 constant $special-chars = Set.new(':', '%', '|', '&', '(', ')', '!', '^', '<', '>', '"');
 
 # I implemented what this article says about CLTA and "cmd.exe" escaping
@@ -39,17 +34,14 @@ sub argv-quote(Str:D $arg, Bool :$force = False --> Str:D) {
         }
 
         my $char = $arg.substr($i,1);
-
         if $char eq '"' {
             # Escape all backslashes and the double quote
             $command-line ~= '\\' x ($num-backslashes * 2 + 1);
-            $command-line ~= $char;
         } else {
             # Normal character: add backslashes and the character
             $command-line ~= '\\' x $num-backslashes;
-            $command-line ~= $char;
         }
-
+	$command-line ~= $char;
         ++$i;
     }
 
